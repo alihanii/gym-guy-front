@@ -73,8 +73,9 @@ export default function ExercisesPage() {
 }
 
 export function Thumb({ e }: { e: Exercise }) {
-  return e.thumbnail_url ? (
-    <img className="avatar ex-thumb" src={e.thumbnail_url} alt="" loading="lazy" />
+  const [broken, setBroken] = useState(false)
+  return e.thumbnail_url && !broken ? (
+    <img className="avatar ex-thumb" src={e.thumbnail_url} alt="" loading="lazy" onError={() => setBroken(true)} />
   ) : (
     <div className="avatar">{e.title_fa.slice(0, 1)}</div>
   )

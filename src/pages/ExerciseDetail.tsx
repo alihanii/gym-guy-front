@@ -75,8 +75,8 @@ export default function ExerciseDetail() {
         <>
           {ex.thumbnail_url && (
             <div className="ex-images">
-              <img src={ex.thumbnail_url} alt="شروع حرکت" />
-              {ex.image_end_url && <img src={ex.image_end_url} alt="پایان حرکت" />}
+              <img src={ex.thumbnail_url} alt="شروع حرکت" onError={(ev) => { ev.currentTarget.style.display = 'none' }} />
+              {ex.image_end_url && <img src={ex.image_end_url} alt="پایان حرکت" onError={(ev) => { ev.currentTarget.style.display = 'none' }} />}
             </div>
           )}
           <section className="panel panel-pad stack">
