@@ -95,8 +95,8 @@ export function ExercisePicker({ open, onClose, onPick, multi = true, injuryTags
       ) : results.length === 0 ? (
         <div className="empty">
           <Search size={32} />
-          <p>حرکتی با «{q}» پیدا نشد. اسم دیگری یا اسم انگلیسی را امتحان کنید، یا خودتان بسازیدش.</p>
-          <button className="btn btn-ghost" onClick={() => setCreating(true)}><Plus size={18} /> ساخت «{q}»</button>
+          <p>{q.trim() ? `حرکتی با «${q.trim()}» پیدا نشد. اسم دیگری را امتحان کنید، یا خودتان بسازیدش.` : 'هنوز حرکتی در بانک نیست. اولین حرکت را بسازید.'}</p>
+          <button className="btn btn-ghost" onClick={() => setCreating(true)}><Plus size={18} /> {q.trim() ? `ساخت «${q.trim()}»` : 'ساخت حرکت جدید'}</button>
         </div>
       ) : (
         <div className="list" style={{ marginInline: -16 }}>

@@ -59,7 +59,12 @@ export default function ExercisesPage() {
             </Link>
           ))}
           {more && <div ref={sentinel} className="list-more">در حال بارگذاری…</div>}
-          {results.length === 0 && <div className="empty"><p>حرکتی پیدا نشد.</p></div>}
+          {results.length === 0 && (
+            <div className="empty">
+              <p>{q || eq ? 'حرکتی پیدا نشد.' : 'هنوز حرکتی اضافه نشده.'}</p>
+              <button className="btn btn-ghost" onClick={() => setCreating(true)}><Plus size={18} /> {q.trim() ? `ساخت «${q.trim()}»` : 'ساخت حرکت جدید'}</button>
+            </div>
+          )}
         </div>
       )}
 
