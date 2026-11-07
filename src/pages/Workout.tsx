@@ -1,3 +1,4 @@
+import { useConfirm } from '../components/Confirm'
 import { useEffect, useMemo, useState } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -45,6 +46,7 @@ type Prev = Record<string, Partial<PerformedSet>[]>
 type Cursor = { block: string; set: string; field: NumField } | null
 
 export default function WorkoutPage() {
+  const confirm = useConfirm()
   const w = useActiveWorkout()
   const nav = useNavigate()
   const qc = useQueryClient()
@@ -265,8 +267,8 @@ export default function WorkoutPage() {
         </button>
         <button
           className="btn btn-danger btn-block"
-          onClick={() => {
-            if (confirm('تمرین لغو شود؟ ست‌های ثبت‌شده ذخیره نمی‌شوند.')) {
+          onClick={async () => {
+            if (await confirm({ title: 'لغو تمرین؟', body: 'ست‌های ثبت‌شده ذخیره نمی‌شوند.', confirm: 'لغو تمرین', cancel: 'ادامه تمرین', danger: true })) {
               workout.discard()
               nav('/')
             }

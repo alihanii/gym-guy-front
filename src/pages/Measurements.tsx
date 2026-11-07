@@ -1,3 +1,4 @@
+import { useConfirm } from '../components/Confirm'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -39,6 +40,7 @@ const todayIso = () => {
 }
 
 export default function MeasurementsPage() {
+  const confirm = useConfirm()
   const nav = useNavigate()
   const qc = useQueryClient()
   const toast = useToast()
@@ -123,7 +125,7 @@ export default function MeasurementsPage() {
                   {FIELDS.filter((x) => m[x.key] !== null).map((x) => `${x.label} ${fa(m[x.key] as number)}`).join('، ')}
                 </div>
               </div>
-              <button className="icon-btn" onClick={() => confirm('این ثبت حذف شود؟') && remove.mutate(m.id)} aria-label="حذف"><Trash2 size={18} /></button>
+              <button className="icon-btn" onClick={async () => (await confirm({ title: 'این ثبت حذف شود؟', confirm: 'حذف', danger: true })) && remove.mutate(m.id)} aria-label="حذف"><Trash2 size={18} /></button>
             </div>
           ))}
         </section>

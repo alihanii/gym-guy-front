@@ -26,7 +26,7 @@ export function CodeEntry({ initial = '', onDone }: { initial?: string; onDone?:
       haptic.success()
       qc.invalidateQueries({ queryKey: ['routines'] })
       onDone?.()
-      nav('/', { replace: true })
+      nav('/routines', { replace: true })
     },
   })
 

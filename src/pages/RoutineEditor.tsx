@@ -54,7 +54,7 @@ export default function RoutineEditor() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['routines'] })
       toast('روتین ذخیره شد')
-      nav('/')
+      nav('/routines')
     },
     onError: (e: Error) => toast(e.message),
   })

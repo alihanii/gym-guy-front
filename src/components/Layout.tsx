@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { BarChart3, Newspaper, Dumbbell, History, BookOpen, Ruler, Users, UserRound, Timer, type LucideIcon } from 'lucide-react'
+import { ClipboardList, House, Users, UserRound, Timer, type LucideIcon } from 'lucide-react'
 import { useAuth } from '../lib/auth'
 import { useActiveWorkout } from '../lib/workout'
 import { useEffect, useState } from 'react'
@@ -13,10 +13,8 @@ export function Layout() {
   const { pathname } = useLocation()
   const wide = pathname.startsWith('/coach/programs')
   const items: Item[] = [
-    { to: '/feed', label: 'فید', icon: Newspaper },
-    { to: '/', label: 'تمرین', icon: Dumbbell, end: true },
-    { to: '/history', label: 'تاریخچه', icon: History },
-    { to: '/exercises', label: 'حرکات', icon: BookOpen },
+    { to: '/', label: 'خانه', icon: House, end: true },
+    { to: '/routines', label: 'روتین‌ها', icon: ClipboardList },
     ...(user?.is_coach ? [{ to: '/coach', label: 'شاگردها', icon: Users }] : []),
     { to: '/profile', label: 'پروفایل', icon: UserRound },
   ]
@@ -28,7 +26,7 @@ export function Layout() {
           <b>جیم‌گای</b>
         </div>
         <nav className="side-nav">
-          {[...items.slice(0, 4), { to: '/stats', label: 'آمار', icon: BarChart3 }, { to: '/measurements', label: 'اندازه‌های بدن', icon: Ruler }, ...items.slice(4)].map(({ to, label, icon: Icon, end }) => (
+          {items.map(({ to, label, icon: Icon, end }) => (
             <NavLink key={to} to={to} end={end}>
               <Icon size={20} />
               {label}
@@ -52,7 +50,7 @@ export function Layout() {
       <ResumeBar variant="float" />
       <nav className="nav" aria-label="ناوبری اصلی">
         <div className="nav-inner">
-          {items.filter((i) => i.to !== '/history').map(({ to, label, icon: Icon, end }) => (
+          {items.map(({ to, label, icon: Icon, end }) => (
             <NavLink key={to} to={to} end={end}>
               <Icon size={22} />
               {label}

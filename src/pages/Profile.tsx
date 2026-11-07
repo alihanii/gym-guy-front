@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
-import { BarChart3, ChevronLeft, History, Lock, LogOut, Ruler, UserRound } from 'lucide-react'
+import { BarChart3, BookOpen, ChevronLeft, History, Lock, LogOut, Ruler, UserRound, Users } from 'lucide-react'
 import { api } from '../lib/api'
 import { useAuth } from '../lib/auth'
 import { fa } from '../lib/fa'
@@ -34,6 +34,7 @@ export default function ProfilePage() {
         <Link to="/history" className="list-item"><History size={20} color="var(--primary)" /><span className="grow" style={{ fontWeight: 700 }}>تاریخچه تمرین‌ها</span><ChevronLeft size={18} className="faint" /></Link>
         <Link to="/stats" className="list-item"><BarChart3 size={20} color="var(--primary)" /><span className="grow" style={{ fontWeight: 700 }}>آمار و تقویم</span><ChevronLeft size={18} className="faint" /></Link>
         <Link to="/measurements" className="list-item"><Ruler size={20} color="var(--primary)" /><span className="grow" style={{ fontWeight: 700 }}>اندازه‌های بدن</span><ChevronLeft size={18} className="faint" /></Link>
+        <Link to="/exercises" className="list-item"><BookOpen size={20} color="var(--primary)" /><span className="grow" style={{ fontWeight: 700 }}>بانک حرکات</span><ChevronLeft size={18} className="faint" /></Link>
       </div>
 
       <label className="panel panel-pad row" style={{ cursor: 'pointer' }}>
@@ -45,15 +46,14 @@ export default function ProfilePage() {
         <input type="checkbox" className="switch" checked={user.is_private} onChange={(e) => setPrivacy.mutate(e.target.checked)} />
       </label>
 
-      <div className="field">
-        <span>نقش</span>
-        <div className="segmented">
-          {([['athlete', 'ورزشکار'], ['coach', 'مربی'], ['both', 'هر دو']] as const).map(([v, l]) => (
-            <button key={v} aria-pressed={user.role === v} onClick={() => setRole.mutate(v)}>{l}</button>
-          ))}
+      <label className="panel panel-pad row" style={{ cursor: 'pointer' }}>
+        <Users size={20} color="var(--text-2)" />
+        <div className="grow">
+          <div style={{ fontWeight: 700 }}>حالت مربی</div>
+          <div className="small muted">بخش شاگردها و برنامه‌نویسی باز می‌شود؛ تمرین خودتان را هم ثبت می‌کنید.</div>
         </div>
-        <p className="small muted">مربی‌ها هم می‌توانند تمرین خودشان را ثبت کنند. «هر دو» هر دو بخش را باز می‌کند.</p>
-      </div>
+        <input type="checkbox" className="switch" checked={user.is_coach} onChange={(e) => setRole.mutate(e.target.checked ? 'both' : 'athlete')} />
+      </label>
 
       <section>
         <div className="section-title">مربی‌های من</div>

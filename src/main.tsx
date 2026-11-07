@@ -7,6 +7,7 @@ import './index.css'
 import App from './App'
 import { AuthProvider } from './lib/auth'
 import { ToastProvider } from './components/Toast'
+import { ConfirmProvider } from './components/Confirm'
 import { ErrorBoundary } from './components/ErrorBoundary'
 
 const qc = new QueryClient({
@@ -19,9 +20,11 @@ createRoot(document.getElementById('root')!).render(
       <BrowserRouter>
         <AuthProvider>
           <ToastProvider>
-            <ErrorBoundary>
-              <App />
-            </ErrorBoundary>
+            <ConfirmProvider>
+              <ErrorBoundary>
+                <App />
+              </ErrorBoundary>
+            </ConfirmProvider>
           </ToastProvider>
         </AuthProvider>
       </BrowserRouter>

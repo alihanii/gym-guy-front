@@ -1,3 +1,4 @@
+import { useConfirm } from '../../components/Confirm'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -48,6 +49,7 @@ function withShape(b: TemplateBlock, patch: Partial<ReturnType<typeof shape>>): 
 }
 
 export default function ProgramBuilder() {
+  const confirm = useConfirm()
   const { id } = useParams()
   const [sp] = useSearchParams()
   const nav = useNavigate()
@@ -185,7 +187,7 @@ export default function ProgramBuilder() {
                 onChange={(e) => editDays((ds) => ds.map((d, i) => (i === active ? { ...d, title: e.target.value } : d)))} />
               {days.length > 1 && (
                 <button className="icon-btn" aria-label="حذف این روز"
-                  onClick={() => { if (confirm('این روز حذف شود؟')) { editDays((ds) => ds.filter((_, i) => i !== active)); setActive(Math.max(0, active - 1)) } }}>
+                  onClick={async () => { if (await confirm({ title: `حذف «${day.title}»؟`, confirm: 'حذف روز', danger: true })) { editDays((ds) => ds.filter((_, i) => i !== active)); setActive(Math.max(0, active - 1)) } }}>
                   <Trash2 size={20} />
                 </button>
               )}
@@ -308,6 +310,7 @@ function Stepper({ label, value, min, max, onChange }: { label: string; value: n
 }
 
 function InviteSheet({ program, onClose, onChange }: { program: Program | null; onClose: () => void; onChange: (p: Program) => void }) {
+  const confirm = useConfirm()
   const [qr, setQr] = useState<string | null>(null)
   const toast = useToast()
   const link = program?.invite_link ? program.invite_link.replace(/^https?:\/\/[^/]+/, window.location.origin) : ''
@@ -330,7 +333,7 @@ function InviteSheet({ program, onClose, onChange }: { program: Program | null; 
       ? navigator.share({ title: program.title, text: `کد برنامه تمرینی شما: ${code}`, url: link }).catch(() => {})
       : copy(link, 'لینک کپی شد')
   const rotate = async () => {
-    if (!confirm('کد فعلی باطل و کد تازه ساخته شود؟')) return
+    if (!(await confirm({ title: 'کد تازه بسازیم؟', body: 'کد فعلی دیگر کار نمی‌کند.', confirm: 'ساخت کد تازه' }))) return
     onChange(await api<Program>(`/coach/programs/${program.id}/new-code/`, { method: 'POST' }))
   }
   return (

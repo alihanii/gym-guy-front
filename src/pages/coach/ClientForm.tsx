@@ -1,7 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { ChevronRight } from 'lucide-react'
+import { ChevronDown, ChevronRight } from 'lucide-react'
 import { api } from '../../lib/api'
 import { useTaxonomy } from '../../lib/data'
 import { fa, toLatinDigits } from '../../lib/fa'
@@ -26,10 +26,12 @@ export default function ClientForm() {
   const qc = useQueryClient()
   const tax = useTaxonomy()
   const [f, setF] = useState<Form>(EMPTY)
+  const [more, setMore] = useState(false)
   const existing = useQuery({ queryKey: ['clients', id], queryFn: () => api<Client>(`/coach/clients/${id}/`), enabled: !!id })
 
   useEffect(() => {
     const c = existing.data
+    if (c) setMore(!!(c.age || c.height_cm || c.weight_kg || c.experience_months || c.notes))
     if (c) setF({
       name: c.name, age: String(c.age ?? ''), height_cm: String(c.height_cm ?? ''), weight_kg: String(c.weight_kg ?? ''),
       experience_months: String(c.experience_months ?? ''), goal: c.goal, days_per_week: c.days_per_week,
@@ -65,13 +67,6 @@ export default function ClientForm() {
       </div>
 
       <label className="field"><span>نام شاگرد</span><input className="input" required value={f.name} onChange={(e) => set('name', e.target.value)} /></label>
-      <div className="grid-2">
-        <label className="field"><span>سن</span><input className="input num" inputMode="numeric" value={f.age} onChange={(e) => set('age', e.target.value)} /></label>
-        <label className="field"><span>سابقه تمرین (ماه)</span><input className="input num" inputMode="numeric" value={f.experience_months} onChange={(e) => set('experience_months', e.target.value)} /></label>
-        <label className="field"><span>قد (سانتی‌متر)</span><input className="input num" inputMode="numeric" value={f.height_cm} onChange={(e) => set('height_cm', e.target.value)} /></label>
-        <label className="field"><span>وزن (کیلو)</span><input className="input num" inputMode="decimal" value={f.weight_kg} onChange={(e) => set('weight_kg', e.target.value)} /></label>
-      </div>
-
       <div className="field">
         <span>هدف</span>
         <div className="chips">
@@ -102,7 +97,20 @@ export default function ClientForm() {
         <p className="small muted">هنگام طراحی برنامه، حرکت‌های پرخطر برای این آسیب‌ها علامت می‌خورند.</p>
       </div>
 
-      <label className="field"><span>یادداشت</span><textarea className="textarea" value={f.notes} onChange={(e) => set('notes', e.target.value)} /></label>
+      <button type="button" className="more-toggle" aria-expanded={more} onClick={() => setMore((v) => !v)}>
+        <ChevronDown size={18} /> جزئیات بیشتر (اختیاری)
+      </button>
+      {more && (
+        <div className="stack reveal" style={{ gap: 16 }}>
+          <div className="grid-2">
+            <label className="field"><span>سن</span><input className="input num" inputMode="numeric" value={f.age} onChange={(e) => set('age', e.target.value)} /></label>
+            <label className="field"><span>سابقه تمرین (ماه)</span><input className="input num" inputMode="numeric" value={f.experience_months} onChange={(e) => set('experience_months', e.target.value)} /></label>
+            <label className="field"><span>قد (سانتی‌متر)</span><input className="input num" inputMode="numeric" value={f.height_cm} onChange={(e) => set('height_cm', e.target.value)} /></label>
+            <label className="field"><span>وزن (کیلو)</span><input className="input num" inputMode="decimal" value={f.weight_kg} onChange={(e) => set('weight_kg', e.target.value)} /></label>
+          </div>
+          <label className="field"><span>یادداشت</span><textarea className="textarea" value={f.notes} onChange={(e) => set('notes', e.target.value)} /></label>
+        </div>
+      )}
       {save.isError && <p className="form-error">{(save.error as Error).message}</p>}
       <button className="btn btn-primary btn-lg btn-block" disabled={save.isPending}>{save.isPending ? 'در حال ذخیره…' : 'ذخیره پرونده'}</button>
     </form>

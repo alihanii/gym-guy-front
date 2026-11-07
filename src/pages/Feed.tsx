@@ -34,15 +34,16 @@ function useFeed(kind: 'following' | 'discover') {
   })
 }
 
-export default function FeedPage() {
+/** Workouts from people you follow, or everyone's public ones. Lives on the home page. */
+export function FeedSection() {
   const [tab, setTab] = useState<'following' | 'discover'>('following')
   const [people, setPeople] = useState(false)
   const feed = useFeed(tab)
   const cards = feed.data?.pages.flatMap((p) => p.results) ?? []
   return (
-    <div className="page">
-      <div className="page-head">
-        <h1 className="page-title">فید</h1>
+    <section className="stack" style={{ gap: 14 }}>
+      <div className="section-title" style={{ margin: 0 }}>
+        <h2 style={{ fontSize: 'inherit' }}>فید</h2>
         <button className="btn btn-ghost btn-sm" onClick={() => setPeople(true)}><Search size={16} /> پیدا کردن ورزشکار</button>
       </div>
       <div className="segmented">
@@ -75,7 +76,7 @@ export default function FeedPage() {
         </button>
       )}
       {people && <PeopleSheet onClose={() => setPeople(false)} />}
-    </div>
+    </section>
   )
 }
 

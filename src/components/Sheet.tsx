@@ -1,6 +1,7 @@
 import { useEffect, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
+import { usePresence } from '../lib/usePresence'
 
 interface Props {
   open: boolean
@@ -13,6 +14,7 @@ interface Props {
 
 /** Bottom sheet: thumb-reachable on phones, dismiss by backdrop, Esc or close button. */
 export function Sheet({ open, onClose, title, actions, children, tall }: Props) {
+  const { mounted, closing } = usePresence(open, 220)
   useEffect(() => {
     if (!open) return
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
@@ -25,9 +27,9 @@ export function Sheet({ open, onClose, title, actions, children, tall }: Props) 
     }
   }, [open, onClose])
 
-  if (!open) return null
+  if (!mounted) return null
   return createPortal(
-    <>
+    <div className="sheet-layer" data-closing={closing || undefined}>
       <div className="sheet-backdrop" onClick={onClose} />
       <div className="sheet" role="dialog" aria-modal="true" style={tall ? { height: '88dvh' } : undefined}>
         <div className="sheet-grip" />
@@ -42,7 +44,7 @@ export function Sheet({ open, onClose, title, actions, children, tall }: Props) 
         </div>
         <div className="sheet-body">{children}</div>
       </div>
-    </>,
+    </div>,
     document.body,
   )
 }

@@ -11,7 +11,7 @@ import ExercisesPage from './pages/Exercises'
 import ExerciseDetail from './pages/ExerciseDetail'
 import RoutineEditor from './pages/RoutineEditor'
 import StatsPage from './pages/Stats'
-import FeedPage from './pages/Feed'
+import RoutinesPage from './pages/Routines'
 import UserProfile from './pages/UserProfile'
 import SocialWorkout from './pages/SocialWorkout'
 import MeasurementsPage from './pages/Measurements'
@@ -48,7 +48,8 @@ export default function App() {
         <Route path="exercises/:slug" element={<ExerciseDetail />} />
         <Route path="routines/new" element={<RoutineEditor />} />
         <Route path="stats" element={<StatsPage />} />
-        <Route path="feed" element={<FeedPage />} />
+        <Route path="routines" element={<RoutinesPage />} />
+        <Route path="feed" element={<Navigate to="/" replace />} />
         <Route path="u/:id" element={<UserProfile />} />
         <Route path="w/:id" element={<SocialWorkout />} />
         <Route path="measurements" element={<MeasurementsPage />} />

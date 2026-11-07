@@ -1,13 +1,14 @@
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { ChevronRight, ClipboardList, Pencil, Send, TriangleAlert } from 'lucide-react'
+import { ChevronRight, ClipboardList, Pencil, Send, Trash2, TriangleAlert } from 'lucide-react'
 import { api } from '../../lib/api'
 import { useExercises, useTaxonomy } from '../../lib/data'
 import { clock, fa, relativeDays } from '../../lib/fa'
 import type { Client, WorkoutLog } from '../../lib/types'
 import { MuscleBars } from '../../components/MuscleBars'
 import { useToast } from '../../components/Toast'
+import { useConfirm } from '../../components/Confirm'
 import { statusBadge } from './CoachHome'
 
 interface Monitor {
@@ -29,6 +30,18 @@ export default function ClientDetail() {
   const tax = useTaxonomy()
   const c = useQuery({ queryKey: ['clients', id], queryFn: () => api<Client>(`/coach/clients/${id}/`) })
   const m = useQuery({ queryKey: ['monitor', id], queryFn: () => api<Monitor>(`/coach/clients/${id}/monitor/`) })
+  const qc = useQueryClient()
+  const toast = useToast()
+  const confirm = useConfirm()
+  const remove = useMutation({
+    mutationFn: () => api(`/coach/clients/${id}/`, { method: 'DELETE' }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['clients'] })
+      toast('شاگرد حذف شد')
+      nav('/coach', { replace: true })
+    },
+    onError: (e: Error) => toast(e.message, 'error'),
+  })
   const client = c.data
   if (!client) return <div className="page"><div className="skeleton" style={{ height: 220 }} /></div>
   const p = client.active_program
@@ -96,6 +109,21 @@ export default function ClientDetail() {
       {m.data && !m.data.linked && p?.invite_code && (
         <p className="small muted">بعد از اینکه شاگرد کد را وارد کند، تمرین‌هایش و مقایسه با برنامه اینجا نمایش داده می‌شود.</p>
       )}
+
+      <button
+        className="btn btn-danger btn-block"
+        disabled={remove.isPending}
+        onClick={async () => {
+          if (await confirm({
+            title: `حذف ${client.name}؟`,
+            body: 'برنامه‌های این شاگرد از روتین‌هایش برداشته می‌شود. تمرین‌هایی که ثبت کرده برای خودش می‌ماند.',
+            confirm: 'حذف شاگرد',
+            danger: true,
+          })) remove.mutate()
+        }}
+      >
+        <Trash2 size={18} /> حذف شاگرد
+      </button>
     </div>
   )
 }

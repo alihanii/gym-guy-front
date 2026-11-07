@@ -29,12 +29,14 @@
   --load-ok: #2ec866;
   --load-high: #ff5a52;
 
-  --radius: 8px;    /* panels, cards */
-  --radius-md: 6px;  /* buttons, inputs, keys */
-  --radius-sm: 4px;  /* cells, inner chips */
+  --radius: 14px;    /* panels, cards */
+  --radius-md: 11px; /* buttons, inputs, keys */
+  --radius-sm: 7px;  /* cells, inner chips */
   --tap: 48px;
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --shadow-float: 0 12px 40px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(0, 0, 0, 0.3);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --nav-h: 64px;
 
@@ -63,6 +65,8 @@ h1, h2, h3, p { margin: 0; text-wrap: balance; }
 .num { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum'; }
 
 /* ---------------------------------------------------------- layout */
+.main > .page { animation: page-in 260ms var(--ease-out); }
+@keyframes page-in { from { opacity: 0; transform: translateY(6px); } }
 .app { max-width: 560px; margin: 0 auto; min-height: 100dvh; padding-bottom: calc(var(--nav-h) + var(--safe-bottom) + 16px); }
 .app.wide { max-width: 1180px; }
 .page { padding: 20px 16px 24px; display: flex; flex-direction: column; gap: 20px; }
@@ -172,11 +176,13 @@ h1, h2, h3, p { margin: 0; text-wrap: balance; }
 }
 .nav-inner { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; width: 100%; max-width: 560px; }
 .nav a {
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
-  font-size: 0.74rem; font-weight: 600; color: var(--text-3); transition: color 150ms ease;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  font-size: 0.76rem; font-weight: 600; color: var(--text-3); transition: color 200ms ease;
 }
+.nav a svg { width: 52px; height: 30px; padding: 4px 14px; border-radius: 999px; transition: background-color 220ms var(--ease-out), color 200ms ease, transform 160ms var(--ease-out); }
+.nav a:active svg { transform: scale(0.92); }
 .nav a.active { color: var(--text); }
-.nav a.active svg { color: var(--primary); }
+.nav a.active svg { color: var(--primary); background: var(--primary-soft); }
 
 .resume-bar {
   position: fixed; inset-inline: 12px; bottom: calc(var(--nav-h) + var(--safe-bottom) + 10px); z-index: 29;
@@ -193,22 +199,49 @@ h1, h2, h3, p { margin: 0; text-wrap: balance; }
 .sheet {
   position: fixed; inset-inline: 0; bottom: 0; z-index: 61; max-width: 560px; margin: 0 auto;
   max-height: 88dvh; display: flex; flex-direction: column;
-  background: var(--surface); border: 1px solid var(--line); border-bottom: 0; border-radius: 12px 12px 0 0;
-  padding-bottom: var(--safe-bottom); animation: sheet-in 320ms var(--ease-drawer);
+  background: var(--surface); border: 1px solid var(--line); border-bottom: 0; border-radius: 22px 22px 0 0;
+  padding-bottom: var(--safe-bottom); animation: sheet-in 340ms var(--ease-drawer);
 }
 .sheet-grip { width: 40px; height: 4px; border-radius: 4px; background: var(--surface-3); margin: 10px auto 4px; flex: none; }
 .sheet-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 8px 8px 16px; }
 .sheet-head h2 { font-size: 1.1rem; font-weight: 800; }
 .sheet-body { overflow-y: auto; padding: 0 16px 16px; flex: 1; min-height: 0; overscroll-behavior: contain; }
 @keyframes sheet-in { from { transform: translateY(100%); } }
+@keyframes sheet-out { to { transform: translateY(100%); } }
+.sheet-layer[data-closing] .sheet { animation: sheet-out 220ms var(--ease-in-out) forwards; }
+.sheet-layer[data-closing] .sheet-backdrop { animation: fade-out 220ms ease-in forwards; }
 @keyframes fade-in { from { opacity: 0; } }
 
-.toast {
-  position: fixed; top: 16px; inset-inline: 16px; z-index: 80; max-width: 420px; margin: 0 auto; padding: 12px 16px;
-  border-radius: var(--radius-md); background: var(--surface-3); border: 1px solid var(--line-strong); font-weight: 600;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45); animation: toast-in 260ms var(--ease-out);
+.toasts {
+  position: fixed; top: calc(12px + env(safe-area-inset-top, 0px)); inset-inline: 16px; z-index: 90;
+  display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none;
 }
-@keyframes toast-in { from { transform: translateY(-12px); opacity: 0; } }
+.toast {
+  display: flex; align-items: center; gap: 10px; max-width: 420px; width: max-content; padding: 11px 16px;
+  border-radius: 999px; background: var(--surface-3); border: 1px solid var(--line-strong); font-weight: 600; font-size: 0.95rem;
+  box-shadow: var(--shadow-float); animation: toast-in 280ms var(--ease-out);
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+.toast.success svg { color: var(--success); flex: none; }
+.toast.error svg { color: var(--failure); flex: none; }
+.toast[data-leaving] { opacity: 0; transform: translateY(-8px) scale(0.98); }
+@keyframes toast-in { from { transform: translateY(-14px) scale(0.98); opacity: 0; } }
+
+/* Confirm dialog (replaces window.confirm). */
+.dialog-layer { position: fixed; inset: 0; z-index: 85; display: grid; place-items: center; padding: 24px; }
+.dialog-backdrop { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.55); backdrop-filter: blur(2px); animation: fade-in 180ms ease-out; }
+.dialog {
+  position: relative; width: 100%; max-width: 360px; padding: 22px 20px 16px; display: flex; flex-direction: column; gap: 10px;
+  background: var(--surface-2); border: 1px solid var(--line-strong); border-radius: 18px; box-shadow: var(--shadow-float);
+  animation: dialog-in 220ms var(--ease-out);
+}
+.dialog h2 { font-size: 1.1rem; font-weight: 800; }
+.dialog-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+.dialog-layer[data-closing] .dialog { animation: dialog-out 160ms ease-in forwards; }
+.dialog-layer[data-closing] .dialog-backdrop { animation: fade-out 160ms ease-in forwards; }
+.btn-danger-solid { background: var(--failure); color: #fff; }
+@keyframes dialog-out { to { opacity: 0; transform: scale(0.97); } }
+@keyframes fade-out { to { opacity: 0; } }
 
 /* ---------------------------------------------------------- empty + misc */
 .empty { text-align: center; padding: 32px 16px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
@@ -366,7 +399,18 @@ h1, h2, h3, p { margin: 0; text-wrap: balance; }
 .mbar-legend i.plan { background: rgba(255, 255, 255, 0.25); }
 
 /* ========================================================== auth */
-.auth { max-width: 440px; margin: 0 auto; min-height: 100dvh; padding: 48px 16px 32px; display: flex; flex-direction: column; gap: 28px; justify-content: center; }
+.auth {
+  min-height: 100dvh; display: flex; flex-direction: column; justify-content: center; padding: 48px 24px calc(32px + var(--safe-bottom));
+  background: radial-gradient(120% 60% at 50% 0%, rgba(47, 140, 255, 0.16), transparent 60%), var(--bg);
+}
+.auth-inner { width: 100%; max-width: 400px; margin: 0 auto; display: flex; flex-direction: column; gap: 32px; animation: page-in 320ms var(--ease-out); }
+.auth-form { display: flex; flex-direction: column; gap: 16px; }
+.auth-switch { text-align: center; color: var(--text-2); font-size: 0.95rem; }
+.auth-switch button { background: none; border: 0; color: var(--primary); font-weight: 700; cursor: pointer; padding: 6px; }
+.more-toggle { display: inline-flex; align-items: center; gap: 6px; background: none; border: 0; color: var(--text-2); font-weight: 600; cursor: pointer; padding: 6px 0; }
+.more-toggle svg { transition: transform 200ms var(--ease-out); }
+.more-toggle[aria-expanded='true'] svg { transform: rotate(180deg); }
+.reveal { animation: page-in 220ms var(--ease-out); }
 .auth-brand { display: flex; flex-direction: column; gap: 10px; }
 .auth-brand h1 { font-size: 2.2rem; font-weight: 900; letter-spacing: -0.02em; }
 
@@ -458,9 +502,10 @@ h1, h2, h3, p { margin: 0; text-wrap: balance; }
   /* Sheets become centred dialogs on a desk. */
   .sheet {
     bottom: auto; top: 50%; translate: 0 -50%; max-width: 600px; max-height: min(80dvh, 760px);
-    border: 1px solid var(--line-strong); border-radius: 12px; box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+    border: 1px solid var(--line-strong); border-radius: 18px; box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
     animation: dialog-in 220ms var(--ease-out);
   }
+  .sheet-layer[data-closing] .sheet { animation: dialog-out 160ms ease-in forwards; }
   .sheet-grip { display: none; }
   .sheet-head { padding-top: 12px; }
 

@@ -1,3 +1,4 @@
+import { useConfirm } from '../components/Confirm'
 import { useState } from 'react'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -18,6 +19,7 @@ const RECORD_LABEL: Record<RecordHit['kind'], string> = {
 }
 
 export default function WorkoutDetail() {
+  const confirm = useConfirm()
   const { id } = useParams()
   const [sp] = useSearchParams()
   const fresh = sp.get('done') === '1'
@@ -92,7 +94,7 @@ export default function WorkoutDetail() {
           setDraft={setDraft}
           saving={saveEdit.isPending}
           onSave={() => saveEdit.mutate()}
-          onDelete={() => confirm('این تمرین برای همیشه حذف شود؟') && remove.mutate()}
+          onDelete={async () => (await confirm({ title: 'حذف این تمرین؟', body: 'این تمرین برای همیشه حذف می‌شود.', confirm: 'حذف', danger: true })) && remove.mutate()}
         />
       )}
 
